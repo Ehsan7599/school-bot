@@ -12,7 +12,9 @@ genai.configure(
     api_key=GEMINI_API_KEY
 )
 
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel(
+    "gemini-1.5-flash-latest"
+)
 
 
 def send_message(chat_id, text):
@@ -36,7 +38,7 @@ def send_message(chat_id, text):
     except Exception as e:
 
         print("SEND MESSAGE ERROR:")
-        print(e)
+        print(str(e))
 
 
 def generate_response(user_text, role="parent"):
@@ -74,7 +76,9 @@ def generate_response(user_text, role="parent"):
         {user_text}
         """
 
-        response = model.generate_content(final_prompt)
+        response = model.generate_content(
+            final_prompt
+        )
 
         return response.text
 
@@ -84,4 +88,4 @@ def generate_response(user_text, role="parent"):
         print(str(e))
         print("==================================")
 
-    return f"ERROR: {str(e)}"
+        return "خطا در ارتباط با هوش مصنوعی ❌"
