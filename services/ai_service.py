@@ -80,7 +80,8 @@ def generate_response(user_text, role="parent"):
 
     except Exception as e:
 
-        print("GEMINI ERROR:")
-        print(e)
+        print("========== GEMINI ERROR ==========")
+        print(str(e))
+        print("==================================")
 
-        return "خطا در ارتباط با هوش مصنوعی ❌"
+    return f"ERROR: {str(e)}"
