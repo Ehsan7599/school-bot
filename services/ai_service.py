@@ -1,41 +1,18 @@
 import requests
+import os
 
-from config import BOT_TOKEN
+import google.generativeai as genai
 
 
-def generate_response(user_message: str, role="parent"):
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-    text = user_message.strip()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-    if "سلام" in text:
+genai.configure(
+    api_key=GEMINI_API_KEY
+)
 
-        if role == "admin":
-            return "سلام مدیر مدرسه 👨‍💼"
-
-        elif role == "student":
-            return "سلام دانش‌آموز عزیز 🌟"
-
-        else:
-            return "سلام 👋\nبه ربات مدرسه خوش آمدید"
-
-    elif "شهریه" in text:
-
-        if role == "parent":
-            return "برای امور مالی با دفتر مدرسه تماس بگیرید."
-
-        else:
-            return "شما دسترسی مالی ندارید."
-
-    elif "تکلیف" in text:
-
-        if role == "student":
-            return "تکلیف امروز: حل صفحه ۱۲ ریاضی ✏️"
-
-        else:
-            return "این بخش مخصوص دانش‌آموزان است."
-
-    else:
-        return "پیام شما دریافت شد ✅"
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 
 def send_message(chat_id, text):
@@ -51,15 +28,59 @@ def send_message(chat_id, text):
 
         response = requests.post(
             url,
-            json=payload,
-            timeout=10
+            json=payload
         )
 
-        return response.json()
+        print(response.text)
 
     except Exception as e:
 
         print("SEND MESSAGE ERROR:")
         print(e)
 
-        return None
+
+def generate_response(user_text, role="parent"):
+
+    try:
+
+        system_prompt = """
+        تو یک دستیار هوشمند مدرسه هستی.
+        به فارسی پاسخ بده.
+        مودب و حرفه‌ای باش.
+        """
+
+        if role == "admin":
+
+            system_prompt += """
+            کاربر مدیر مدرسه است.
+            """
+
+        elif role == "teacher":
+
+            system_prompt += """
+            کاربر معلم است.
+            """
+
+        else:
+
+            system_prompt += """
+            کاربر ولی یا دانش‌آموز است.
+            """
+
+        final_prompt = f"""
+        {system_prompt}
+
+        پیام کاربر:
+        {user_text}
+        """
+
+        response = model.generate_content(final_prompt)
+
+        return response.text
+
+    except Exception as e:
+
+        print("GEMINI ERROR:")
+        print(e)
+
+        return "خطا در ارتباط با هوش مصنوعی ❌"

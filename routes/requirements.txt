@@ -1,9 +1,0 @@
-fastapi
-uvicorn[standard]
-sqlalchemy
-requests
-jinja2
-python-multipart
-starlette
-openai
-itsdangerous
