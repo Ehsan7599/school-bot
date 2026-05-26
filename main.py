@@ -15,3 +15,9 @@ app.add_middleware(
 app.include_router(bale_router)
 
 app.include_router(admin_router)
+@app.get("/")
+def home():
+
+    return {
+        "message": "School Bot Running 🚀"
+    }
